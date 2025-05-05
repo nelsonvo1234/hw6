@@ -334,17 +334,24 @@ template<typename K, typename V, typename Prober, typename Hash, typename KEqual
 void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 {
     //std::cout << "Inserting: " << p.first << std::endl;
-    if((numNodes_ / ((double)table_.size())) > resizeAlpha_){
+    if((numNodes_ / ((double)table_.size())) >= resizeAlpha_){
         //std::cout << numNodes_ << std::endl;
         //std::cout << "Resizing" << std::endl;
         resize();
     }
 
     HASH_INDEX_T index = this->probe(p.first);
+    if(index == npos){
+      throw std::logic_error("No space");
+    }
     //HASH_INDEX_T index = 0;
     numNodes_++;
     numActiveNodes_++;
-    //std::cout << "Index: " << index << std::endl;
+    if(table_[index] != nullptr){
+      delete table_[index];
+      numNodes_--;
+      numActiveNodes_--;
+    }
     table_[index] = new HashItem(p);
     
 }
@@ -353,9 +360,11 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 template<typename K, typename V, typename Prober, typename Hash, typename KEqual>
 void HashTable<K,V,Prober,Hash,KEqual>::remove(const KeyType& key)
 {
-    HASH_INDEX_T index = this->probe(key);
+  HASH_INDEX_T index = this->probe(key);
+  if(index != npos && table_[index] != nullptr){
     table_[index]->deleted = true;
     numActiveNodes_--;
+  }
 }
 
 
