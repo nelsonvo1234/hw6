@@ -1,10 +1,13 @@
 #ifndef HASH_H
 #define HASH_H
 
+#include <ctype.h>
 #include <iostream>
 #include <cmath>
 #include <random>
 #include <chrono>
+#include <ctime>
+#include <cstdlib>
 
 typedef std::size_t HASH_INDEX_T;
 
@@ -19,16 +22,41 @@ struct MyStringHash {
     // hash function entry point (i.e. this is h(k))
     HASH_INDEX_T operator()(const std::string& k) const
     {
-        // Add your code here
-
-
+        unsigned long long sums[5];
+        unsigned long long hash = 0;
+        for(int j = k.length() - 6; j >= -5; j -= 6){
+            int nJ = j;
+            if(j < 0){
+                nJ = 0;
+            }
+            unsigned long long sum = 0;
+            // Add your code here
+            for(int i = nJ; i < k.length() && i < 6 + j; i++){
+                sum *= 36;
+                sum += letterDigitToNumber(k[i]);
+            }
+            sums[5 - (k.length() - j) / 6] = sum;
+            //std::cout << sum << std::endl;
+            //std::cout << rValues[5 - (k.length() - j) / 6] << std::endl;
+            hash += sum * rValues[5 - (k.length() - j) / 6];
+        }
+        return hash;
     }
 
     // A likely helper function is to convert a-z,0-9 to an integral value 0-35
     HASH_INDEX_T letterDigitToNumber(char letter) const
     {
         // Add code here or delete this helper function if you do not want it
-
+        if(letter >= 'A' && letter <= 'Z'){
+            letter = tolower(letter);
+        }
+        if(letter >= '0' && letter <= '9'){
+            return letter - '0' + 26;
+        }
+        else{
+            return letter - 'a';
+        }
+        return NULL;
     }
 
     // Code to generate the random R values

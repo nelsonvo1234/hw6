@@ -19,13 +19,16 @@ int main()
 
     // This is just arbitrary code. Change it to test whatever you like about your 
     // hash table implementation.
+    //std::cout << "inserting" << std::endl;
     for(size_t i = 0; i < 10; i++){
         std::stringstream ss;
         ss << "hi" << i;
         ht.insert({ss.str(), i});
     }
+    cout<<"Looking for hi1" << endl;
     if( ht.find("hi1") != nullptr ){
         cout << "Found hi1" << endl;
+        cout << ht.find("hi1")->first << endl;
         ht["hi1"] += 1;
         cout << "Incremented hi1's value to: " << ht["hi1"] << endl;
     }
